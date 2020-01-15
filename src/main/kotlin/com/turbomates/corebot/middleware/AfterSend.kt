@@ -12,7 +12,6 @@ interface AfterSend {
 
 data class ExternalIdLink(val conversationId: ConversationId, val messageId: MessageId, val externalId: ExternalId)
 
-
 suspend fun processAfterSend(channel: Channel<ExternalIdLink>, middleware: List<AfterSend>)
 {
     while (true) {

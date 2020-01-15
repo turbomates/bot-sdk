@@ -61,3 +61,4 @@ class MessageSender(
 
 private data class Body(val type: String, val text: String, val from: Member)
 data class BotSenderData(val id: String, val name: String, val serverUrl: String)
+data class ExternalId(val id: String)

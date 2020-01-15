@@ -8,7 +8,6 @@ import com.turbomates.corebot.conversation.ConversationAdapter
 import com.turbomates.corebot.conversation.storage.InMemory
 import com.turbomates.corebot.middleware.ExternalIdLink
 import com.turbomates.corebot.middleware.Log
-import com.turbomates.corebot.middleware.ReverseLinking
 import com.turbomates.corebot.middleware.processAfterSend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -45,7 +44,7 @@ class BotEngineMain {
         }
 
         launch {
-            processAfterSend(bindings, listOf(Log(logger), ReverseLinking(storage)))
+            processAfterSend(bindings, listOf(Log(logger)))
         }
     }
 }
