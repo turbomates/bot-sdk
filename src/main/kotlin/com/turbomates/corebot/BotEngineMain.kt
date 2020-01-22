@@ -9,43 +9,38 @@ import com.turbomates.corebot.conversation.storage.InMemory
 import com.turbomates.corebot.middleware.ExternalIdLink
 import com.turbomates.corebot.middleware.Log
 import com.turbomates.corebot.middleware.processAfterSend
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 
-class BotEngineMain {
+object BotEngineMain: CoroutineScope by CoroutineScope(Dispatchers.Default) {
 
-    private val messages = Channel<OutcomeMessage>()
-    private val authorization = Channel<String>()
-    private val bindings = Channel<ExternalIdLink>()
-    private val storage = InMemory()
-    private lateinit var config: BotConfig
-    private val logger = KotlinLogging.logger {}
+    fun setup(
+        id: String,
+        pass: String,
+        name: String,
+        serverUrl: String
+    ) : ConversationAdapter {
 
-    fun setup(id: String, pass: String, name: String, serverUrl: String): ConversationAdapter
-    {
-        config = BotConfig(BotAuth(id, pass), BotSenderData(id, name, serverUrl))
-        return ConversationAdapter(storage, messages)
-    }
+        val authorization = Channel<String>()
+        val bindings = Channel<ExternalIdLink>()
+        val config = BotConfig(BotAuth(id, pass), BotSenderData(id, name, serverUrl))
+        val logger = KotlinLogging.logger {}
+        val storage = InMemory()
+        val messageSender = MessageSender(config.botSenderData, authorization, bindings)
 
-    suspend fun start() = withContext(Dispatchers.Default) {
 
         launch {
             val microsoftAuthorise = MicrosoftAuthorise(config.botAuth)
             Authorization.keepBotAuthorized(microsoftAuthorise, authorization)
         }
 
-        launch {
-            val messageSender = MessageSender(config.botSenderData, authorization, bindings)
-            Sender.sendOutcomeMessages(messageSender, messages)
-
-        }
-
+        //@todo is it really need?
         launch {
             processAfterSend(bindings, listOf(Log(logger)))
         }
+
+        return ConversationAdapter(storage, messageSender, this)
     }
 }
 

@@ -7,20 +7,7 @@ import com.turbomates.corebot.middleware.ExternalIdLink
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
-
-object Sender
-{
-    suspend fun sendOutcomeMessages(sender: MessageSender, channel: Channel<OutcomeMessage>)
-    {
-        while (true) {
-            if (!channel.isEmpty) {
-                sender.send(channel.receive())
-            }
-            delay(100)
-        }
-    }
-}
+import kotlinx.coroutines.coroutineScope
 
 class MessageSender(
     private val senderData: BotSenderData,
@@ -30,7 +17,9 @@ class MessageSender(
 
     private var currentAuthorization: String? = null
 
-    suspend fun send(message: OutcomeMessage) {
+    suspend fun send(message: OutcomeMessage) = coroutineScope {
+
+        //delay(12000)
         val client = HttpClient()
 
         if (!authorization.isEmpty) {

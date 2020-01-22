@@ -1,19 +1,25 @@
 package com.turbomates.corebot.conversation
 
+import com.turbomates.corebot.botmessage.MessageSender
 import com.turbomates.corebot.botmessage.OutcomeMessage
 import com.turbomates.corebot.conversation.storage.Storage
 import com.turbomates.corebot.incomeactivity.ConversationId
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.*
 
 class ConversationAdapter (
     private val storage: Storage,
-    private val channel: Channel<OutcomeMessage>
+    private val sender: MessageSender,
+    private val botScope: CoroutineScope
 ) {
 
-    suspend fun write(message: OutcomeMessage) {
-        channel.send(message)
+    fun write(message: OutcomeMessage) {
         val conversation = gatherConversation(message.conversationId)
         conversation.push(message)
+
+        botScope.launch {
+            sender.send(message)
+        }
+
         storage.save(conversation)
     }
 
