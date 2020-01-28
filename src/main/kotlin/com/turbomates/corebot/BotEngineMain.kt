@@ -5,7 +5,6 @@ import com.turbomates.corebot.botauth.BotAuth
 import com.turbomates.corebot.botauth.MicrosoftAuthorise
 import com.turbomates.corebot.botmessage.*
 import com.turbomates.corebot.conversation.ConversationAdapter
-import com.turbomates.corebot.conversation.storage.InMemory
 import com.turbomates.corebot.middleware.ExternalIdLink
 import com.turbomates.corebot.middleware.Log
 import com.turbomates.corebot.middleware.processAfterSend
@@ -26,7 +25,6 @@ object BotEngineMain: CoroutineScope by CoroutineScope(Dispatchers.Default) {
         val bindings = Channel<ExternalIdLink>()
         val config = BotConfig(BotAuth(id, pass), BotSenderData(id, name, serverUrl))
         val logger = KotlinLogging.logger {}
-        val storage = InMemory()
         val messageSender = MessageSender(config.botSenderData, authorization, bindings)
 
 
@@ -40,7 +38,7 @@ object BotEngineMain: CoroutineScope by CoroutineScope(Dispatchers.Default) {
             processAfterSend(bindings, listOf(Log(logger)))
         }
 
-        return ConversationAdapter(storage, messageSender, this)
+        return ConversationAdapter(messageSender, this)
     }
 }
 
