@@ -15,11 +15,14 @@ object Handler {
             //Indicates that the bot was added to a conversation, other members were added to or removed from the conversation, or conversation metadata has changed.
             "conversationUpdate" -> activity.membersAdded?.let { members ->
 
-                members.filter { addedIsBot(it, activity.recipient) }
-                    .let { bot.onBotAdded(activity.conversation)}
+                if (members.any { addedIsBot(it, activity.recipient) }) {
+                    bot.onBotAdded(activity.conversation)
+                }
 
-                members.filterNot { addedIsBot(it, activity.recipient)}
-                    .let { persons -> bot.onPersonsAdded(persons, activity.conversation)}
+                val persons = members.filterNot { addedIsBot(it, activity.recipient)}
+                if (persons.isNotEmpty()) {
+                    bot.onPersonsAdded(persons, activity.conversation)
+                }
             }
             //Indicates that the bot was added or removed from a user's contact list.
             "contactRelationUpdate" -> {}

@@ -19,7 +19,6 @@ class MessageSender(
 
     suspend fun send(message: OutcomeMessage) = coroutineScope {
 
-        //delay(12000)
         val client = HttpClient()
 
         if (!authorization.isEmpty) {
