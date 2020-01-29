@@ -5,14 +5,32 @@ import kotlinx.coroutines.delay
 
 object Authorization
 {
-    suspend fun keepBotAuthorized(authorise: MicrosoftAuthorise, authorization: Channel<String>)
+    suspend fun keepBotAuthorized(authorise: Authorise, auth: BotAuth)
     {
         while (true) {
-            val token = authorise.get()
-            authorization.send(token.value)
-            delay(token.expiredInSec * 1000 - 100)
+            auth.renewToken(authorise)
+            delay(auth.authorized().expiredInSec * 1000 - 100)
         }
     }
 }
 
+interface Authorise { suspend fun get(): Token }
 data class Token(val value: String, val expiredInSec: Long)
+
+object BotAuth {
+
+    private var current: Token? = null
+    private val blocked = Channel<Token>()
+
+    suspend fun renewToken(authorise: Authorise){
+        current = null
+        blocked.send(authorise.get())
+    }
+
+    suspend fun authorized(): Token {
+        if (current == null) {
+            current = blocked.receive()
+        }
+        return current as Token
+    }
+}

@@ -2,12 +2,11 @@ package com.turbomates.corebot
 
 import com.turbomates.corebot.botauth.Authorization
 import com.turbomates.corebot.botauth.BotAuth
+import com.turbomates.corebot.botauth.BotCredentials
 import com.turbomates.corebot.botauth.MicrosoftAuthorise
 import com.turbomates.corebot.botmessage.*
 import com.turbomates.corebot.conversation.ConversationAdapter
-import com.turbomates.corebot.middleware.ExternalIdLink
 import com.turbomates.corebot.middleware.Log
-import com.turbomates.corebot.middleware.processAfterSend
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import mu.KotlinLogging
@@ -21,25 +20,19 @@ object BotEngineMain: CoroutineScope by CoroutineScope(Dispatchers.Default) {
         serverUrl: String
     ) : ConversationAdapter {
 
-        val authorization = Channel<String>()
-        val bindings = Channel<ExternalIdLink>()
-        val config = BotConfig(BotAuth(id, pass), BotSenderData(id, name, serverUrl))
+        val authorization = BotAuth
+        val config = BotConfig(BotCredentials(id, pass), BotSenderData(id, name, serverUrl))
         val logger = KotlinLogging.logger {}
-        val messageSender = MessageSender(config.botSenderData, authorization, bindings)
+        val messageSender = MessageSender(config.botSenderData, authorization, listOf(Log(logger)))
 
 
         launch {
-            val microsoftAuthorise = MicrosoftAuthorise(config.botAuth)
+            val microsoftAuthorise = MicrosoftAuthorise(config.botCredentials)
             Authorization.keepBotAuthorized(microsoftAuthorise, authorization)
-        }
-
-        //@todo is it really need?
-        launch {
-            processAfterSend(bindings, listOf(Log(logger)))
         }
 
         return ConversationAdapter(messageSender, this)
     }
 }
 
-private data class BotConfig(val botAuth: BotAuth, val botSenderData: BotSenderData)
+private data class BotConfig(val botCredentials: BotCredentials, val botSenderData: BotSenderData)

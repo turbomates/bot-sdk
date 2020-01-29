@@ -8,7 +8,7 @@ import io.ktor.client.features.logging.LogLevel
 import io.ktor.client.features.logging.Logging
 import io.ktor.client.request.post
 
-class HttpClient {
+object HttpClient {
     suspend inline fun <reified T> post(url: String, content: Any, postHeaders: List<Header>? = null): T {
         val client = client()
         val result = client.post<T>(url) {
