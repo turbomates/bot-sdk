@@ -11,11 +11,12 @@ repositories {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    implementation "io.ktor:ktor-client-core:$versionKtor"
-    implementation "io.ktor:ktor-client-cio:$versionKtor"
-    implementation "io.ktor:ktor-client-gson:$versionKtor"
+    implementation "io.ktor:ktor-client-core:$ktor_version"
+    implementation "io.ktor:ktor-client-cio:$ktor_version"
+    implementation "io.ktor:ktor-client-serialization:$ktor_version"
+    implementation "io.ktor:ktor-client-serialization-jvm:$ktor_version"
 
-    implementation "io.ktor:ktor-client-logging-jvm:$versionKtor"
+    implementation "io.ktor:ktor-client-logging-jvm:$ktor_version"
     implementation "io.github.microutils:kotlin-logging:1.5.9"
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
@@ -32,7 +33,7 @@ bintray {
         name = 'corebot'
         licenses = ['MIT']
         vcsUrl = 'https://github.com/turbomates/bot-sdk.git'
-        version '1.1.2'
+        version "$pkg_version"
     }
     publications = ['MyPublication']
 }
