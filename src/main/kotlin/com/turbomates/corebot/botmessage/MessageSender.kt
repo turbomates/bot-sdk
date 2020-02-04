@@ -1,6 +1,6 @@
 package com.turbomates.corebot.botmessage
 
-import com.turbomates.corebot.botauth.BotAuth
+import com.turbomates.corebot.botauth.Authorise
 import com.turbomates.corebot.incomeactivity.Member
 import com.turbomates.corebot.httpclient.Header
 import com.turbomates.corebot.httpclient.HttpClient
@@ -12,7 +12,7 @@ import kotlinx.serialization.Serializable
 
 class MessageSender(
     private val senderData: BotSenderData,
-    private val auth: BotAuth,
+    private val auth: Authorise,
     private val middleware: List<AfterSend>
 ){
 
@@ -23,7 +23,7 @@ class MessageSender(
             Body("message", message.message, Member(senderData.id, senderData.name)),
             listOf(
                 Header(HttpHeaders.ContentType, ContentType.Application.Json.toString()),
-                Header(HttpHeaders.Authorization, auth.authorized().value)
+                Header(HttpHeaders.Authorization, auth.get().value)
             )
         )
 
