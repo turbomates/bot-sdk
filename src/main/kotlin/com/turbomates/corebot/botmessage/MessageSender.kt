@@ -8,6 +8,7 @@ import com.turbomates.corebot.middleware.AfterSend
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import kotlinx.coroutines.coroutineScope
+import kotlinx.serialization.Serializable
 
 class MessageSender(
     private val senderData: BotSenderData,
@@ -29,8 +30,10 @@ class MessageSender(
         middleware.map { it(message) }
     }
 }
-data class BotSenderData(val id: String, val name: String, val serverUrl: String)
 
+data class BotSenderData(val id: String, val name: String, val serverUrl: String)
+@Serializable
 private data class Body(val type: String, val text: String, val from: Member)
+@Serializable
 private data class ExternalId(val id: String)
 
