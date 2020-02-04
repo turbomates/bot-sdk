@@ -3,6 +3,7 @@ package com.turbomates.corebot.botauth
 import com.turbomates.corebot.httpclient.HttpClient
 import io.ktor.client.request.forms.FormDataContent
 import io.ktor.http.Parameters
+import kotlinx.serialization.Serializable
 
 class MicrosoftAuthorise(private val credentials: BotCredentials): Authorise {
 
@@ -31,4 +32,5 @@ class MicrosoftAuthorise(private val credentials: BotCredentials): Authorise {
 }
 
 data class BotCredentials(val id: String, val password: String)
-private data class MicrosoftToken(val token_type: String, val expires_in: Long, val extExpiresIn: Long, val access_token: String)
+@Serializable
+private data class MicrosoftToken(val token_type: String, val expires_in: Long, val ext_expires_in: Long, val access_token: String)
